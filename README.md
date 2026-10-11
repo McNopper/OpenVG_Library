@@ -29,7 +29,7 @@ This produces the `OpenVG` static library. Requirements:
 
 - **McNopper/EGL** - its OpenVG seam (`EGL_ENABLE_OPENVG`) is switched on by
   this library's build. A sibling `../EGL` checkout is preferred; otherwise the
-  `v1.0.13` release is fetched.
+  `v1.0.14` release is fetched.
 - A C++14 compiler (the reference implementation is MSVC6-era C++).
 
 Usage
