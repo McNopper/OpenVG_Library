@@ -1,0 +1,12 @@
+# Build results
+[Bb]uild/
+lib/
+_deps/
+
+# CMake artifacts
+CMakeCache.txt
+cmake_install.cmake
+*.sln
+*.vcxproj
+*.vcxproj.filters
+**CMakeFiles

@@ -1,0 +1,68 @@
+name: Build
+
+on:
+  push:
+    branches:
+      - '**'
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+# No macOS job: EGL has no macOS backend ("CMake fails by design" there).
+jobs:
+  build:
+    name: ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: windows
+            os: windows-latest
+          - name: linux-x11
+            os: ubuntu-latest
+
+    steps:
+      # The library prefers a sibling ../EGL checkout, which builds the
+      # current EGL HEAD instead of the pinned release tag.
+      - uses: actions/checkout@v4
+        with:
+          path: OpenVG_Library
+      - uses: actions/checkout@v4
+        with:
+          repository: McNopper/EGL
+          path: EGL
+
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            libx11-dev \
+            libgl1-mesa-dev \
+            libglx-dev \
+            libopengl-dev \
+            libvulkan-dev
+
+      # The Windows backend of EGL is WGL + Vulkan HDR: find_package(Vulkan REQUIRED).
+      - name: Install Vulkan SDK (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          choco install -y vulkan-sdk
+          $sdk = (Get-ChildItem 'C:\VulkanSDK' -Directory | Sort-Object Name -Descending | Select-Object -First 1).FullName
+          if (-not $sdk) { throw 'Vulkan SDK install directory not found under C:\VulkanSDK' }
+          "VULKAN_SDK=$sdk" | Out-File -FilePath $env:GITHUB_ENV -Append -Encoding utf8
+
+      - name: Configure (Windows)
+        if: runner.os == 'Windows'
+        run: cmake -S OpenVG_Library -B OpenVG_Library/build -DCMAKE_BUILD_TYPE=Release
+      - name: Configure (Linux)
+        if: runner.os == 'Linux'
+        run: cmake -S OpenVG_Library -B OpenVG_Library/build -G Ninja -DCMAKE_BUILD_TYPE=Release
+
+      - name: Build
+        run: cmake --build OpenVG_Library/build --config Release
