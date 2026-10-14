@@ -26,7 +26,7 @@ else()
     FetchContent_Declare(
         egl
         GIT_REPOSITORY https://github.com/McNopper/EGL.git
-        GIT_TAG        v1.0.16
+        GIT_TAG        v1.0.17
     )
 endif()
 set(EGL_BUILD_EXAMPLES OFF CACHE BOOL "" FORCE)
