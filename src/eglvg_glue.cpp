@@ -240,7 +240,10 @@ namespace
     // point is used - which is exactly when a provider is needed.
     struct ProviderRegistration
     {
-        ProviderRegistration()
+        // Runs at static init: eglSetVGProvider only stores a pointer, and a
+        // registration failure at load time is fatal for the library anyway -
+        // so this must not let an exception escape static initialization.
+        ProviderRegistration() noexcept
         {
             eglSetVGProvider(&g_provider);
         }

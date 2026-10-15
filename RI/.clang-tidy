@@ -1,0 +1,20 @@
+---
+# Vendored tree - the Khronos OpenVG Reference Implementation (provenance in
+# THIRD-PARTY.md), imported and maintained as-is: the examples' rendered
+# output and the device runs are the validation contract for this code.
+#
+# Deliberately NOT gated: findings in RI/ are third-party scope - exactly the
+# boundary tools/check_tidy.py already draws for third_party/ directories.
+# A bring-up run under the repository-root profile recorded what it reports:
+# flag-bitfield ORs that the Khronos headers invite (segment|absolute,
+# format|PREMULTIPLIED), value-identical switch branches over shared spec
+# constants, uninitialized fields in the legacy constructors, intentional
+# exception swallowing around allocations, and dead stores in the error-queue
+# clear pattern. They stay recorded, not repaired: rewriting validated
+# foreign code to satisfy a linter trades a known-good tree for style points.
+#
+# To review them again against the root profile:
+#   clang-tidy -p=build --config-file=../.clang-tidy RI/src/riApi.cpp
+Checks: '-*'
+WarningsAsErrors: ''
+FormatStyle: none

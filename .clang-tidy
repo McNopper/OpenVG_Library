@@ -1,0 +1,90 @@
+---
+# clang-tidy profile - C++ library (correctness subset).
+#
+# OpenVG_Library is C++ (the vendored Khronos OpenVG Reference Implementation
+# under RI/, patched here, plus the EGL provider glue in src/), so the three
+# exclusions the sibling C projects carry because "C has neither" - the
+# C++ exception and enum-default-initialization checks - are lifted here:
+# they are exactly the bug classes a C++ gate should run. The style-only
+# exclusions stay: formatting and modernisation are authored, not derived -
+# there is deliberately no .clang-format here.
+#
+# Kept - these are the correctness bug classes:
+#   * clang-diagnostic-*            the compiler's own C/C++ diagnostics
+#   * clang-analyzer-core           uninitialized reads, NULL derefs, lifetime
+#                                   and ownership errors
+#   * clang-analyzer-core/unix      errno and stream-error handling
+#   * clang-analyzer-security.insecureAPI.strcpy
+#                                   unbounded string copies (CWE-119)
+#   * bugprone-* except the style exclusions below
+#     incl. throwing-static-initialization, exception-escape,
+#     invalid-enum-default-initialization
+#                                   C++ static-init and escape bugs, enum
+#                                   default-init leaving garbage - live risks
+#                                   in a new/delete, MSVC6-era code base
+#   * bugprone-suspicious-memory-comparison
+#                                   memcmp over a struct that has padding bytes
+#   * performance-* except -performance-enum-size (ABI of exported types)
+#   * portability-*                 non-portable constructs
+#
+# Out of scope - style, not defects:
+#   * modernize-*, cppcoreguidelines-*, hicpp-*
+#                                 - modernisation/review families. Omitted
+#                                   outright: they either rewrite authored
+#                                   code style or bury the defect classes above.
+#   * bugprone-casting-through-void, -narrowing-conversions,
+#     -multi-level-implicit-pointer-conversion
+#                                 - explicit casts and conversions are how this
+#                                   code base is written; the gate is defects.
+#   * bugprone-reserved-identifier - the internal `_*` prefix is the
+#                                   long-standing convention here; renaming it
+#                                   is an ABI break.
+#   * bugprone-easily-swappable-parameters - subjective
+#   * clang-analyzer-security.ArrayBound
+#                                 - flags deliberate contiguous-member indexing
+#                                   via `(&x)[i]`; high false-positive rate.
+#   * clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling
+#                                 - demands optional C11 Annex K; checked
+#                                   memset/snprintf are correct. The dangerous
+#                                   subset stays on via insecureAPI.strcpy.
+#   * clang-analyzer-optin.performance.Padding
+#                                 - struct-layout advice, not a defect.
+#   * performance-enum-size        - changing the underlying type would change
+#                                   the ABI of the exported types.
+#
+# NOTE: comments must stay OUTSIDE the folded "Checks:" scalar below, or they
+# become part of the value and silently break the check list.
+Checks: >
+  -*,
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  -clang-analyzer-security.ArrayBound,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  bugprone-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-reserved-identifier,
+  -bugprone-casting-through-void,
+  -bugprone-narrowing-conversions,
+  -bugprone-multi-level-implicit-pointer-conversion,
+  performance-*,
+  -performance-enum-size,
+  portability-*
+
+# Only correctness-oriented findings fail the gate; the rest report.
+WarningsAsErrors: >
+  clang-diagnostic-*,
+  clang-analyzer-*,
+  -clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling,
+  -clang-analyzer-optin.performance.Padding,
+  bugprone-*,
+  -bugprone-implicit-widening-of-multiplication-result,
+  -bugprone-unchecked-string-to-number-conversion,
+  -bugprone-switch-missing-default-case
+
+# Headers live next to the sources (RI/src/*.h); the Khronos upstream headers
+# under RI/include and the sibling EGL headers stay out of the gate - they are
+# not this repository's to lint.
+HeaderFilterRegex: '.*[\\/](Example[^\\/]+|src)[\\/].*'
+
+# Do not reformat: style is authored, not derived.
+FormatStyle: none

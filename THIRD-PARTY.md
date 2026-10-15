@@ -14,13 +14,12 @@ outdated or buggy code is fixed in this repository (the changes are listed
 below). The upstream license terms apply to those sources unchanged:
 
 - **Library:** OpenVG 1.1 Reference Implementation (the "Materials")
-- **Upstream:** https://www.khronos.org/openvg/
+- **Upstream:** <https://www.khronos.org/openvg/>
 - **Copyright:** Copyright (c) 2007 The Khronos Group Inc.
 - **License:** the Khronos permissive license shipped with the reference
   implementation (full text below and in [`RI/license.txt`](RI/license.txt))
 
-> OpenVG 1.1 Reference Implementation
-> -----------------------------------
+> ## OpenVG 1.1 Reference Implementation
 >
 > Copyright (c) 2007 The Khronos Group Inc.
 >
@@ -43,9 +42,9 @@ below). The upstream license terms apply to those sources unchanged:
 > THE MATERIALS.
 
 The canonical copy of the upstream license, including the notes on the tiger
-sample data of the reference implementation (extracted from `tiger.eps` of
-**GPL Ghostscript** - that data is not part of this library, but the note
-ships with the reference implementation), is kept in [`RI/license.txt`](RI/license.txt)
+sample data of the reference implementation (extracted from `tiger.eps` of **GPL
+Ghostscript** - that data is not part of this library, but the note ships with
+the reference implementation), is kept in [`RI/license.txt`](RI/license.txt)
 together with [`RI/readme.txt`](RI/readme.txt).
 
 ### What was stripped from `RI/`
@@ -65,19 +64,19 @@ So far the changes are:
   pointer-sized (`uintptr_t`) instead of the 32-bit `VGuint` - the
   implementation casts object pointers to handles, which loses precision on
   64-bit platforms (it did not build for x64).
-- [`RI/src/riDefs.h`](RI/src/riDefs.h): the MSVC6 for-scope workaround
-  (`#define for if(getFalse()); else for`) is removed. Modern compilers scope
-  for-init variables correctly, and the macro broke every standard header
-  included after it.
-- [`RI/src/riApi.cpp`](RI/src/riApi.cpp): the unused `egl.h` include is
-  removed. The EGL seam only uses `void*` and `bool` declarations, and the
-  platform headers a public EGL header pulls in collided with the
-  implementation's own types.
+- [`RI/src/riDefs.h`](RI/src/riDefs.h): the MSVC6 for-scope workaround (`#define
+  for if(getFalse()); else for`) is removed. Modern compilers scope for-init
+  variables correctly, and the macro broke every standard header included after
+  it.
+- [`RI/src/riApi.cpp`](RI/src/riApi.cpp): the unused `egl.h` include is removed.
+  The EGL seam only uses `void*` and `bool` declarations, and the platform
+  headers a public EGL header pulls in collided with the implementation's own
+  types.
 
 ## Dependency: McNopper/EGL
 
 - **Library:** McNopper/EGL (portable EGL 1.5 with HDR support)
-- **Upstream:** https://github.com/McNopper/EGL
+- **Upstream:** <https://github.com/McNopper/EGL>
 - **License:** MIT
 - **Copyright:** Copyright (c) since 2014 Norbert Nopper
 
@@ -85,4 +84,4 @@ EGL's OpenVG seam (`EGL_ENABLE_OPENVG`, off by default there) is switched on
 by OpenVG_Library's build; its license and notices are maintained in the EGL
 repository:
 
-https://github.com/McNopper/EGL/blob/main/THIRD-PARTY.md
+<https://github.com/McNopper/EGL/blob/main/THIRD-PARTY.md>

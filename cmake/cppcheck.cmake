@@ -38,11 +38,15 @@ file(MAKE_DIRECTORY ${CPPCHECK_REPORT_DIR})
 
 # Paths analysed by no profile: the build tree (which holds the fetched
 # third-party sources), the checked-in assets and the rendered screenshots.
+# RI/ is the vendored Khronos Reference Implementation (THIRD-PARTY.md):
+# third-party scope, recorded but not gated - the same boundary the
+# clang-tidy lane draws for it in RI/.clang-tidy.
 set(CPPCHECK_EXCLUDES
     -i${CMAKE_BINARY_DIR}
     -i${CMAKE_SOURCE_DIR}/build
     -i${CMAKE_SOURCE_DIR}/Binaries
     -i${CMAKE_SOURCE_DIR}/screenshots
+    -i${CMAKE_SOURCE_DIR}/RI
 )
 
 # Default profile: high signal-to-noise. Fails the target on real findings.

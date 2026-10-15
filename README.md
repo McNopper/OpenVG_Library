@@ -1,5 +1,4 @@
-OpenVG_Library
-==============
+# OpenVG_Library
 
 [![Build](https://github.com/McNopper/OpenVG_Library/actions/workflows/build.yml/badge.svg)](https://github.com/McNopper/OpenVG_Library/actions/workflows/build.yml)
 
@@ -8,7 +7,7 @@ OpenVG implementation (the `vg*` API) whose platform side is played by
 McNopper/EGL through a thin provider glue.
 
 The implementation derives from the OpenVG 1.1 Reference Implementation by
-The Khronos Group (https://www.khronos.org/openvg/). Its functionality is
+The Khronos Group (<https://www.khronos.org/openvg/>). Its functionality is
 preserved; outdated or buggy code is fixed - for example the 32-bit handle
 typedef (it did not build for x64) and an MSVC6-era `for` macro that broke
 modern toolchains. Provenance and license are documented in `THIRD-PARTY.md`.
@@ -19,8 +18,7 @@ GPUs such as the Vivante GPU of the STM32MP1), link the platform's own
 libraries instead and leave this library out - that is what the
 [McNopper/OpenVG](https://github.com/McNopper/OpenVG) examples do.
 
-Building
---------
+## Building
 
         cmake -S . -B build
         cmake --build build
@@ -32,8 +30,7 @@ This produces the `OpenVG` static library. Requirements:
   `v1.0.17` release is fetched.
 - A C++14 compiler (the reference implementation is MSVC6-era C++).
 
-Usage
------
+## Usage
 
 Link the `OpenVG` target (it pulls in `EGL`) and include `<VG/openvg.h>`:
 
@@ -46,10 +43,24 @@ framebuffer (see EGL's `src/eglvg.h`) and presents it on `eglSwapBuffers`.
 Together with [GLUS](https://github.com/McNopper/GLUS) (`OpenGL=VG` flavor)
 this is the full stack behind the McNopper/OpenVG examples.
 
-License
--------
+## License
 
 The glue and build environment are MIT (see `LICENSE`). The RI-derived sources
 are (c) 2007 The Khronos Group under their own permissive license - see
 `THIRD-PARTY.md` and `RI/license.txt`, and
-https://www.khronos.org/openvg/.
+<https://www.khronos.org/openvg/>.
+
+## Code quality
+
+| Layer | Command | Gate |
+| --- | --- | --- |
+| cppcheck | `cmake --build build/ninja --target cppcheck` | exits non-zero on findings |
+| clang-tidy | `python tools/check_tidy.py --build-dir build/ninja` | `WarningsAsErrors` in `.clang-tidy` |
+
+The vendored Khronos RI under `RI/` is third-party scope: it carries its own
+`RI/.clang-tidy` recording the boundary - the bring-up findings stay recorded,
+not repaired (see the comment there and `THIRD-PARTY.md`) - and the cppcheck
+target excludes it in `cmake/cppcheck.cmake`. The gates are optional at build
+time; a clean checkout without them builds exactly as before. The clang-tidy
+profile keeps correctness classes and deliberately skips style - formatting
+here is authored, not derived.
