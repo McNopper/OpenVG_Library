@@ -18,6 +18,21 @@ GPUs such as the Vivante GPU of the STM32MP1), link the platform's own
 libraries instead and leave this library out - that is what the
 [McNopper/OpenVG](https://github.com/McNopper/OpenVG) examples do.
 
+## Changelog
+
+### v1.0.6
+
+Provider and dependency correctness:
+
+- **OpenVG context and resize teardown is lifetime-safe**: the provider now
+  releases the context-owned default drawable through `setDefaultDrawable(0)`
+  instead of deleting a referenced object during context destruction or when
+  replacing the backing store. All five examples shut down cleanly on WSL and
+  Windows; ASan/UBSan report no ownership errors.
+- **Track EGL v1.0.20**: exact delegated GLES format matching, the Wayland
+  non-visual config fallback and the OpenVG resize allocation fix. The full
+  dEQP-EGL.functional suite on WSL reports 2308 Pass / 0 Fail.
+
 ## Building
 
         cmake -S . -B build
@@ -27,7 +42,7 @@ This produces the `OpenVG` static library. Requirements:
 
 - **McNopper/EGL** - its OpenVG seam (`EGL_ENABLE_OPENVG`) is switched on by
   this library's build. A sibling `../EGL` checkout is preferred; otherwise the
-  `v1.0.19` release is fetched.
+  `v1.0.20` release is fetched.
 - A C++14 compiler (the reference implementation is MSVC6-era C++).
 
 ## Usage

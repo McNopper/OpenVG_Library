@@ -159,7 +159,11 @@ namespace
                     t_currentContext = 0;
                 }
 
-                delete entry->drawable;
+                // The VGContext owns one reference to its default drawable.
+                // Release that reference instead of deleting a still-referenced
+                // drawable; the context destructor then sees no drawable.
+                entry->context->setDefaultDrawable(0);
+                entry->drawable = 0;
                 delete entry->context;
                 delete entry;
 
@@ -197,9 +201,12 @@ namespace
 
         if (entry->framebuffer != framebuffer || entry->width != width || entry->height != height)
         {
-            delete entry->drawable;
+            // setDefaultDrawable owns the old drawable's only external
+            // reference. Release it before replacing the backing store; a
+            // direct delete would leave the context pointing at freed memory.
+            entry->context->setDefaultDrawable(0);
+            entry->drawable = 0;
 
-            entry->drawable    = 0;
             entry->framebuffer = framebuffer;
             entry->width       = width;
             entry->height      = height;
